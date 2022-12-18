@@ -184,6 +184,37 @@
   <!-- 도로명주소 CDN -->
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script>
+    callStudentData();
+    function callStudentData(){
+      $.ajax({
+        url: '/api/v1/student',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+          console.log(response);
+          for (var i = 0; i < response.length; i++) {
+            var html =
+              '<tr onclick="getStudentDetail(' +
+              response[i].id +
+              ')"><td>' +
+              response[i].id +
+              '</td><td>' +
+                response[i].name +
+              '</td><td>' +
+              response[i].age +
+              '</td><td>' +
+              response[i].phoneNumber.substring(0,3) + '-' + response[i].phoneNumber.substring(3,7)+'-'+response[i].phoneNumber.substring(7,12) +
+              '</td><td>' +
+                response[i].address +
+              '</td><td>' +
+              response[i].dept.name +
+              '</td></tr>';
+            $('#data').append(html);
+          }
+        },
+      });
+    }
+
     $('#empAdd').click(function () {
       $('.write-popup').css('display', 'block');
     });
@@ -203,7 +234,7 @@
     list.forEach((item) => {
       item.addEventListener('mouseover', activeLink);
     });
-    function getData() {
+    function getStudentDetail() {
       $('.update-popup').css('display', 'block');
     }
 
