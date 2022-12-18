@@ -234,8 +234,18 @@
     list.forEach((item) => {
       item.addEventListener('mouseover', activeLink);
     });
-    function getStudentDetail() {
+    function getStudentDetail(id) {
       $('.update-popup').css('display', 'block');
+      $.ajax({
+        url: '/api/v1/student/'+id,
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+          console.log(response);
+          for (var i = 0; i < response.length; i++) {
+          }
+        },
+      });
     }
 
     //도로명 주소 함수
