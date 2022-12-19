@@ -59,7 +59,7 @@
           </div>
           <div class="input-box">
             <label>과정 기간 : </label>
-            <input type="date" value="2022-08-02" placeholder="과정 시작 날짜입력..." />
+            <input id="startClassDate" type="date" value="2022-08-02" placeholder="과정 시작 날짜입력..." />
             <input type="date" value="2023-02-06" placeholder="과정 종료 날짜입력..." />
           </div>
           <div class="input-box">
@@ -67,7 +67,7 @@
             <input type="text" value="현상원 명예교수" placeholder="교사이름 입력하세요..." />
           </div>
           <div class="btn-area">
-            <a href="#" class="btn-update" onclick="">수정</a>
+            <a href="#" class="btn-update" onclick="deptUpdate()">수정</a>
             <a href="#" class="btn-delete" onclick="">삭제</a>
           </div>
         </div>
@@ -184,6 +184,11 @@
 
     function addSubject() {
       $('.write-popup').css('display', 'block');
+    }
+
+    function deptUpdate(){
+      var a = $("#startClassDate").val()
+      console.log(a);
     }
   </script>
 </html>
