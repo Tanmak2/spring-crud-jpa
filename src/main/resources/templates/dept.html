@@ -14,28 +14,28 @@
         <div class="editor">
           <div class="input-box">
             <label>과정 번호 : </label>
-            <input type="number" placeholder="과정번호를 입력하세요..." />
+            <input id="insertId" type="number" placeholder="과정번호를 입력하세요..." />
           </div>
           <div class="input-box">
             <label>과정 명 : </label>
-            <input type="text" placeholder="과정명을 입력하세요..." />
+            <input id="insertName" type="text" placeholder="과정명을 입력하세요..." />
           </div>
           <div class="input-box">
             <label>과정 호실 : </label>
-            <input type="text" placeholder="과정호실을 입력하세요..." />
+            <input id="insertLocation" type="text" placeholder="과정호실을 입력하세요..." />
           </div>
           <div class="input-box">
             <label>과정 기간 : </label>
-            <input type="date" value="2022-08-01" placeholder="과정 시작 날짜입력..." />
-            <input type="date" value="2023-02-06" placeholder="과정 종료 날짜입력..." />
+            <input id="insertStartClassDate" type="date" placeholder="과정 시작 날짜입력..." />
+            <input id="insertEndClassDate" type="date" placeholder="과정 종료 날짜입력..." />
           </div>
           <div class="input-box">
             <label>담당 교사 : </label>
-            <input type="text" placeholder="교사이름 입력하세요..." />
+            <input id="insertTeacher" type="text" placeholder="교사이름 입력하세요..." />
           </div>
           <div class="btn-area">
             <a href="#" class="btn-cancel" onclick="">취소</a>
-            <a href="#" class="btn-success" onclick="">등록</a>
+            <a href="#" class="btn-success" onclick="doInsert()">등록</a>
           </div>
         </div>
       </div>
@@ -47,28 +47,28 @@
           </div>
           <div class="input-box">
             <label>과정 번호 : </label>
-            <input type="number" value="9983" placeholder="과정번호를 입력하세요..." />
+            <input id="detailId" type="number" readonly />
           </div>
           <div class="input-box">
             <label>과정 명 : </label>
-            <input type="text" value="웹개발자 양성과정" placeholder="과정명을 입력하세요..." />
+            <input id="detailName" type="text" placeholder="과정명을 입력하세요..." />
           </div>
           <div class="input-box">
             <label>과정 호실 : </label>
-            <input type="text" value="501호" placeholder="과정호실을 입력하세요..." />
+            <input id="detailLocation" type="text" placeholder="과정호실을 입력하세요..." />
           </div>
           <div class="input-box">
             <label>과정 기간 : </label>
-            <input id="startClassDate" type="date" value="2022-08-02" placeholder="과정 시작 날짜입력..." />
-            <input type="date" value="2023-02-06" placeholder="과정 종료 날짜입력..." />
+            <input id="detailStartClassDate" type="date" placeholder="과정 시작 날짜입력..." />
+            <input id="detailEndClassDate" type="date" placeholder="과정 종료 날짜입력..." />
           </div>
           <div class="input-box">
             <label>담당 교사 : </label>
-            <input type="text" value="현상원 명예교수" placeholder="교사이름 입력하세요..." />
+            <input id="detailTeacher" type="text" placeholder="교사이름 입력하세요..." />
           </div>
           <div class="btn-area">
-            <a href="#" class="btn-update" onclick="deptUpdate()">수정</a>
-            <a href="#" class="btn-delete" onclick="">삭제</a>
+            <a href="#" class="btn-update" onclick="doUpdate()">수정</a>
+            <a href="#" class="btn-delete" onclick="doDelete()">삭제</a>
           </div>
         </div>
       </div>
@@ -120,22 +120,7 @@
                 <th>담당 교사</th>
               </tr>
             </thead>
-            <tbody id="data">
-              <tr onclick="getSubject()">
-                <td>18990</td>
-                <td>주짓수 개발자 양성 과정</td>
-                <td>501호</td>
-                <td>22.06.15 ~ 22.12.22</td>
-                <td>이정수</td>
-              </tr>
-              <tr onclick="getSubject()">
-                <td>18330</td>
-                <td>React.js 개발자 양성 과정</td>
-                <td>502호</td>
-                <td>22.12.07 ~ 23.05.01</td>
-                <td>이예진</td>
-              </tr>
-            </tbody>
+            <tbody id="data"></tbody>
           </table>
           <!-- 페이징 처리하는 HTML -->
           <div class="pagination">
@@ -161,6 +146,112 @@
     crossorigin="anonymous"
   ></script>
   <script>
+    callDeptData();
+    function callDeptData() {
+      $.ajax({
+        url: '/api/v1/dept',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+          console.log(response);
+          for (var i = 0; i < response.length; i++) {
+            var html =
+              '<tr onclick="getDeptDetail(' +
+              response[i].id +
+              ')"><td>' +
+              response[i].id +
+              '</td><td>' +
+              response[i].name +
+              '</td><td>' +
+              response[i].location +
+              '</td><td>' +
+              response[i].startClassDate.substr(2).replace(/-/g, '.') +
+              ' ~ ' +
+              response[i].endClassDate.substr(2).replace(/-/g, '.') +
+              '</td><td>' +
+              response[i].teacher +
+              '</td></tr>';
+            $('#data').append(html);
+          }
+        },
+      });
+    }
+    function doInsert() {
+      var insertId = $('#insertId').val();
+      var insertName = $('#insertName').val();
+      var insertLocation = $('#insertLocation').val();
+      var insertStartClassDate = $('#insertStartClassDate').val();
+      var insertEndClassDate = $('#insertEndClassDate').val();
+      var insertTeacher = $('#insertTeacher').val();
+
+      var jsonData = {
+        id: insertId,
+        name: insertName,
+        location: insertLocation,
+        startClassDate: insertStartClassDate,
+        endClassDate: insertEndClassDate,
+        teacher: insertTeacher,
+      };
+      console.log(jsonData);
+      $.ajax({
+        url: '/api/v1/dept',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(jsonData),
+        dataType: 'json',
+        success: function (response) {
+          alert('추가 완료!');
+          location.reload();
+        },
+      });
+    }
+
+    function doUpdate() {
+      var detailId = $('#detailId').val();
+      var detailName = $('#detailName').val();
+      var detailLocation = $('#detailLocation').val();
+      var detailStartClassDate = $('#detailStartClassDate').val();
+      var detailEndClassDate = $('#detailEndClassDate').val();
+      var detailTeacher = $('#detailTeacher').val();
+
+      var jsonData = {
+        id: detailId,
+        name: detailName,
+        age: detailAge,
+        address: detailAddress,
+        phoneNumber: detailPhoneNumber,
+        dept: {
+          id: detailDeptName,
+        },
+      };
+
+      $.ajax({
+        url: '/api/v1/dept',
+        type: 'PATCH',
+        contentType: 'application/json',
+        data: JSON.stringify(jsonData),
+        dataType: 'json',
+        success: function (response) {
+          alert('수정 완료!');
+          location.reload();
+        },
+      });
+    }
+
+    function doDelete() {
+      var detailId = $('#detailId').val();
+
+      $.ajax({
+        url: '/api/v1/dept/' + detailId,
+        type: 'DELETE',
+        dataType: 'json',
+        success: function (response) {
+          alert('삭제 완료!');
+          location.reload();
+        },
+      });
+    }
+
     $('.btn-cancel').click(function () {
       $('.write-popup').css('display', 'none');
     });
@@ -178,17 +269,25 @@
       item.addEventListener('mouseover', activeLink);
     });
 
-    function getSubject() {
+    function getDeptDetail(id) {
       $('.update-popup').css('display', 'block');
+      $.ajax({
+        url: '/api/v1/dept/' + id,
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+          $('#detailId').val(response.id);
+          $('#detailName').val(response.name);
+          $('#detailLocation').val(response.location);
+          $('#detailStartClassDate').val(response.startClassDate);
+          $('#detailEndClassDate').val(response.endClassDate);
+          $('#detailTeacher').val(response.teacher);
+        },
+      });
     }
 
     function addSubject() {
       $('.write-popup').css('display', 'block');
-    }
-
-    function deptUpdate(){
-      var a = $("#startClassDate").val()
-      console.log(a);
     }
   </script>
 </html>
